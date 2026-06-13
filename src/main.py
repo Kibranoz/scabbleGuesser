@@ -1,22 +1,33 @@
-import numpy as np
 import cv2 as cv
+import numpy as np
+from cv2.typing import MatLike, Size
 from matplotlib import pyplot as plt
 
-img = cv.imread("./assets/tiles.png")
+img: MatLike | None = cv.imread("./assets/tiles.png")
+assert img is not None
 
 # Scale down by 50% (0.5)
 scale_percent = 0.15
 width = int(img.shape[1] * scale_percent)
 height = int(img.shape[0] * scale_percent)
-dim = (width, height)
+dim: Size = (width, height)
 
 # Resize the actual image data
-resized_img = cv.resize(img, dim, interpolation=cv.INTER_AREA)
+resized_img = cv.resize(src=img, dsize=dim, interpolation=cv.INTER_AREA)
 
-canny = cv.Canny(resized_img, 125, 175)
+k_size = (10, 10)
 
-cv.imshow("Canny edges", canny)
+blurred = cv.medianBlur(resized_img, 7)
+cv.imshow("Median", blurred)
+canny = cv.Canny(blurred, 125, 175)
 
-cv.waitKey(0)
+contours, hierarchies = cv.findContours(canny, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+
+cv.imshow("canny edges", canny)
+
+print(len(contours))
+print(len((hierarchies[0])))
+
+_ = cv.waitKey(0)
 
 cv.destroyAllWindows()

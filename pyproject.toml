@@ -1,0 +1,3 @@
+[tool.basedpyright]
+reportOptionalMemberAccess = false
+reportAny = false
